@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Patient Profile</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      padding: 30px;
+      margin: 0;
+    }
+
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    .profile-container {
+      background-color: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      max-width: 500px;
+      margin: auto;
+    }
+
+    .profile-container p {
+      font-size: 16px;
+      margin: 10px 0;
+    }
+
+    .profile-container strong {
+      color: #34495e;
+    }
+
+    img {
+      display: block;
+      margin: 20px auto;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 15px;
+      text-decoration: none;
+      background-color: #3498db;
+      color: white;
+      border-radius: 5px;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    a:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-container">
+    <h2>Patient Profile</h2>
+    <p><strong>Name:</strong> {{ name }}</p>
+    <p><strong>Patient ID:</strong> {{ patient_id }}</p>
+    <p><strong>Age:</strong> {{ age }}</p>
+    <p><strong>NIC:</strong> {{ nic }}</p>
+    <p><strong>PIN:</strong> {{ pin }}</p>
+
+    <img src="{{ url_for('static', filename='qr_codes/' + qr_image) }}" alt="QR Code" width="200">
+
+    <a href="{{ url_for('access_page') }}">⬅️ Back to Access Page</a>
+  </div>
+</body>
+</html>

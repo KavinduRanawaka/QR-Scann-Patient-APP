@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient Registered</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            padding: 40px;
+            text-align: center;
+            color: #2c3e50;
+            margin: 0;
+        }
+        h2 {
+            color: #27ae60;
+            margin-bottom: 25px;
+        }
+        p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        img {
+            margin-top: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+        }
+        a {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 25px;
+            background-color: #2980b9;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        a:hover {
+            background-color: #1f5c85;
+        }
+    </style>
+</head>
+<body>
+    <h2>Patient Registered Successfully!</h2>
+    <p><strong>Name:</strong> {{ name }}</p>
+    <p><strong>PIN:</strong> {{ pin }}</p>
+    <p><strong>QR Code:</strong></p>
+    <img src="{{ url_for('static', filename='qr_codes/' + qr_image) }}" alt="QR Code">
+    <br><br>
+    <a href="{{ url_for('register') }}">➕ Register another patient</a>
+</body>
+</html>

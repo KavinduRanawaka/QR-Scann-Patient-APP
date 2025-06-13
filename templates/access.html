@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Access Patient</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      text-align: center; 
+      padding: 20px; 
+      background-color: #f9f9f9;
+      margin: 0;
+    }
+    #reader { 
+      width: 300px; 
+      margin: 20px auto; 
+      border: 2px solid #ddd;
+      border-radius: 8px;
+    }
+    .pin-box { 
+      margin-top: 30px; 
+    }
+    input[type="text"] { 
+      padding: 10px; 
+      font-size: 18px; 
+      width: 200px; 
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    input[type="text"]:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 5px rgba(52,152,219,0.5);
+    }
+    button { 
+      padding: 10px 15px; 
+      margin-top: 15px; 
+      font-size: 16px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    .keyboard {
+      margin-top: 20px;
+      display: inline-block;
+      background: #eee;
+      border-radius: 10px;
+      padding: 10px;
+      user-select: none;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    .keyboard--hidden {
+      display: none;
+    }
+    .keyboard__key {
+      font-size: 18px;
+      padding: 12px 18px;
+      margin: 6px 4px;
+      border: none;
+      border-radius: 6px;
+      background-color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
+      min-width: 40px;
+      user-select: none;
+      transition: background-color 0.2s;
+    }
+    .keyboard__key:hover {
+      background-color: #ddd;
+    }
+  </style>
+</head>
+<body>
+  <h2>Access Patient Profile</h2>
+
+  <!-- QR Code Scanner -->
+  <div id="reader"></div>
+
+  <!-- PIN Input -->
+  <div class="pin-box">
+    <form method="POST" action="/access/pin" autocomplete="off">
+      <input 
+        type="text" 
+        name="pin" 
+        id="pinInput" 
+        placeholder="Enter PIN" 
+        data-virtual-element 
+        maxlength="10"
+        required
+        autocomplete="off"
+      >
+      <br>
+      <button type="submit">Access by PIN</button>
+    </form>
+  </div>
+
+  <!-- Virtual Keyboard -->
+  <div class="keyboard keyboard--hidden">
+    <div class="keyboard__keys"></div>
+  </div>
+
+  <script>
+    // QR Scanner
+    const qrScanner = new Html5Qrcode("reader");
+    Html5Qrcode.getCameras().then(cameras => {
+      if (cameras && cameras.length) {
+        qrScanner.start(
+          cameras[0].id,
+          { fps: 10, qrbox: 250 },
+          qrCodeMessage => {
+            // Assuming QR code data ends with patient ID or PIN
+            // Redirect to patient profile page
+            let patientId = qrCodeMessage.split("/").pop();
+            window.location.href = "/patient/" + encodeURIComponent(patientId);
+          },
+          errorMsg => {
+            // Optionally log scanning errors
+            // console.warn(`QR error: ${errorMsg}`);
+          }
+        ).catch(err => {
+          alert("Unable to start camera for scanning: " + err);
+        });
+      } else {
+        alert("No cameras found.");
+      }
+    }).catch(err => {
+      alert("Camera access denied or not available.");
+    });
+
+    // Virtual Keyboard implementation (numeric only + backspace)
+    const Keyboard = {
+      elements: { main: null, keysContainer: null, keys: [] },
+      eventHandlers: { oninput: null, onclose: null },
+      properties: { value: "", capsLock: false },
+      init() {
+        this.elements.main = document.querySelector(".keyboard");
+        this.elements.keysContainer = document.querySelector(".keyboard__keys");
+        this.elements.keysContainer.appendChild(this._createKeys());
+        this.elements.keys = this.elements.keysContainer.querySelectorAll(".keyboard__key");
+
+        document.querySelectorAll("[data-virtual-element]").forEach(element => {
+          element.addEventListener("focus", () => {
+            this.open(element.value, currentValue => {
+              element.value = currentValue;
+            });
+          });
+        });
+
+        document.addEventListener("mousedown", (e) => {
+          if (!this.elements.main.contains(e.target) && ![...document.querySelectorAll("[data-virtual-element]")].includes(e.target)) {
+            this.close();
+          }
+        });
+      },
+      _createKeys() {
+        const fragment = document.createDocumentFragment();
+        const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "backspace"];
+        keys.forEach(key => {
+          const keyEl = document.createElement("button");
+          keyEl.setAttribute("type", "button");
+          keyEl.classList.add("keyboard__key");
+          keyEl.textContent = key === "backspace" ? "⌫" : key;
+          keyEl.addEventListener("click", () => {
+            if (key === "backspace") {
+              this.properties.value = this.properties.value.slice(0, -1);
+            } else {
+              this.properties.value += key;
+            }
+            this._triggerEvent("oninput");
+          });
+          fragment.appendChild(keyEl);
+        });
+        return fragment;
+      },
+      _triggerEvent(handlerName) {
+        if (typeof this.eventHandlers[handlerName] === "function") {
+          this.eventHandlers[handlerName](this.properties.value);
+        }
+      },
+      open(value, oninput) {
+        this.properties.value = value || "";
+        this.eventHandlers.oninput = oninput;
+        this.elements.main.classList.remove("keyboard--hidden");
+      },
+      close() {
+        this.properties.value = "";
+        this.eventHandlers.oninput = null;
+        this.elements.main.classList.add("keyboard--hidden");
+      }
+    };
+
+    window.addEventListener("DOMContentLoaded", () => Keyboard.init());
+  </script>
+</body>
+</html>
