@@ -12,9 +12,6 @@ This is a web-based application built using **HTML, CSS, JavaScript**, and **Fla
 - 👨‍⚕️ Allow doctors to scan QR codes and access patient profiles
 - 🗃️ Flask-based backend to manage data and routing
 
-## 🖼️ Demo
-
-![QR Scan Demo](demo/qr_scan.gif) *(Add your own GIF or screenshot here)*
 
 ## 🛠️ Tech Stack
 
