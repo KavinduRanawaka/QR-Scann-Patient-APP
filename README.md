@@ -24,7 +24,7 @@ This is a web-based application built using **HTML, CSS, JavaScript**, and **Fla
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/your-repo-name.git
+   git clone https://github.com/KavinduRanawaka/QR-Scann-Patient-APP.git
    cd your-repo-name
 
     Create a virtual environment (optional but recommended)
